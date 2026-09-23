@@ -1,2 +1,35 @@
-﻿// SearchBar — full-text query input.
-// Implemented in issue #8 (search UI). Scaffolded by issue #1.
+﻿"use client";
+
+import { useId } from "react";
+import { IconSearch } from "../browser/icons";
+
+type SearchBarProps = {
+  value?: string;
+  onChange?: (value: string) => void;
+};
+
+export function SearchBar({ value = "", onChange }: SearchBarProps) {
+  const id = useId();
+
+  return (
+    <div className="relative px-3 pb-3">
+      <label htmlFor={id} className="sr-only">
+        Search the Small Web
+      </label>
+      <div className="relative">
+        <IconSearch
+          size={16}
+          className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-[var(--muted)]"
+        />
+        <input
+          id={id}
+          type="search"
+          value={value}
+          onChange={(e) => onChange?.(e.target.value)}
+          placeholder="Search page bodies…"
+          className="glass w-full rounded-full py-2.5 pr-4 pl-10 text-sm outline-none placeholder:text-[var(--muted)] focus:ring-2 focus:ring-[var(--ring)]"
+        />
+      </div>
+    </div>
+  );
+}
