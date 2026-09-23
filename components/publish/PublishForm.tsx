@@ -15,7 +15,7 @@ export function PublishForm({ open, onClose }: PublishFormProps) {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center sm:p-6">
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-6 md:p-8">
       <button
         type="button"
         className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
@@ -26,7 +26,7 @@ export function PublishForm({ open, onClose }: PublishFormProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
-        className="glass-strong relative z-10 flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[var(--radius)] sm:rounded-[var(--radius)] animate-fade-up"
+        className="glass-strong relative z-10 flex max-h-[min(92vh,100%)] w-full max-w-lg flex-col overflow-hidden rounded-t-[var(--radius)] pb-[env(safe-area-inset-bottom)] sm:max-h-[90vh] sm:rounded-[var(--radius)] sm:pb-0 animate-fade-up"
       >
         <div className="flex items-center justify-between border-b border-[var(--surface-border)] px-5 py-4">
           <h2 id={titleId} className="font-display text-lg font-semibold">

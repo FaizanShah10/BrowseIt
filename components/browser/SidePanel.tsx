@@ -25,19 +25,20 @@ export function SidePanel({ open, onClose, showEmpty = false }: SidePanelProps) 
     <>
       <button
         type="button"
-        className="fixed inset-0 z-40 bg-black/35 backdrop-blur-[1px] md:bg-black/20"
+        className="fixed inset-0 z-40 bg-black/40 backdrop-blur-[1px] lg:bg-black/25"
         aria-label="Close side panel"
         onClick={onClose}
       />
+      {/* Full-screen overlay on phone/tablet; fixed column from lg up. */}
       <aside
-        className="glass-strong fixed inset-y-0 right-0 z-50 flex w-full max-w-full flex-col md:w-[var(--panel-width)] animate-panel-in"
+        className="glass-strong fixed inset-0 z-50 flex w-full flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] animate-panel-in lg:inset-y-0 lg:right-0 lg:left-auto lg:w-[min(var(--panel-width),100vw)] lg:pt-0 lg:pb-0"
         aria-label="History and search"
       >
         <div className="flex items-center gap-2 border-b border-[var(--surface-border)] px-3 py-3">
           <div className="flex flex-1 rounded-full bg-[var(--skeleton)] p-1">
             <button
               type="button"
-              className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              className={`flex-1 rounded-full px-3 py-2 text-sm font-medium transition lg:py-1.5 ${
                 tab === "history" ? "bg-[var(--surface-strong)] shadow-sm" : "text-[var(--muted)]"
               }`}
               onClick={() => setTab("history")}
@@ -46,7 +47,7 @@ export function SidePanel({ open, onClose, showEmpty = false }: SidePanelProps) 
             </button>
             <button
               type="button"
-              className={`flex-1 rounded-full px-3 py-1.5 text-sm font-medium transition ${
+              className={`flex-1 rounded-full px-3 py-2 text-sm font-medium transition lg:py-1.5 ${
                 tab === "search" ? "bg-[var(--surface-strong)] shadow-sm" : "text-[var(--muted)]"
               }`}
               onClick={() => setTab("search")}
@@ -65,7 +66,7 @@ export function SidePanel({ open, onClose, showEmpty = false }: SidePanelProps) 
             <SearchResults empty={showEmpty} />
           </div>
         ) : (
-          <div className="min-h-0 flex-1 pt-3">
+          <div className="min-h-0 flex-1 overflow-y-auto pt-3">
             <HistoryPanel empty={showEmpty} />
           </div>
         )}

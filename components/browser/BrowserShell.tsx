@@ -128,8 +128,9 @@ export function BrowserShell() {
           onPersonChange={setPersonName}
         />
 
-        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-6 sm:px-4 sm:py-8">          {/* Issue #3 only: preview shells without navigation logic. */}
-          <div className="mb-5 flex flex-wrap items-center justify-center gap-2">
+        <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6 md:py-8">
+          {/* Issue #3 only: preview shells without navigation logic. */}
+          <div className="mb-4 flex flex-wrap items-center justify-center gap-1.5 sm:mb-5 sm:gap-2">
             {(
               [
                 ["idle", "Home"],
@@ -140,7 +141,7 @@ export function BrowserShell() {
               <button
                 key={id}
                 type="button"
-                className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+                className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition sm:px-3 sm:text-xs ${
                   preview === id
                     ? "bg-[var(--accent)] text-white"
                     : "glass text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -152,7 +153,7 @@ export function BrowserShell() {
             ))}
             <button
               type="button"
-              className={`rounded-full px-3 py-1 text-xs font-medium transition ${
+              className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition sm:px-3 sm:text-xs ${
                 showEmptyPanel
                   ? "bg-[var(--accent)] text-white"
                   : "glass text-[var(--muted)] hover:text-[var(--foreground)]"
@@ -170,7 +171,7 @@ export function BrowserShell() {
         </main>
 
         {backgroundMode === "picture" && ready ? (
-          <p className="pointer-events-none absolute bottom-3 left-3 z-10 text-[11px] text-white/80 drop-shadow sm:bottom-4 sm:left-4">
+          <p className="pointer-events-none absolute bottom-[max(0.75rem,env(safe-area-inset-bottom))] left-[max(0.75rem,env(safe-area-inset-left))] z-10 max-w-[70%] text-[10px] text-white/80 drop-shadow sm:bottom-4 sm:left-4 sm:max-w-none sm:text-[11px]">
             {picture.credit}
           </p>
         ) : null}

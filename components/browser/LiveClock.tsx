@@ -32,11 +32,13 @@ export function LiveClock() {
     : "\u00a0";
 
   return (
-    <div className="animate-fade-up text-center">
-      <p className="font-display text-[clamp(3.5rem,12vw,6.5rem)] font-medium leading-none tracking-tight tabular-nums">
+    <div className="animate-fade-up px-2 text-center">
+      <p className="font-display text-[clamp(2.75rem,14vw,6.5rem)] font-medium leading-none tracking-tight tabular-nums">
         {time}
       </p>
-      <p className="mt-3 text-base text-[var(--muted)] sm:text-lg">{date}</p>
+      <p className="mt-2 text-sm text-[var(--muted)] sm:mt-3 sm:text-base md:text-lg">
+        {date}
+      </p>
     </div>
   );
 }

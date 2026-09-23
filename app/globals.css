@@ -95,6 +95,7 @@ body {
   color: var(--foreground);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 button,
@@ -128,8 +129,9 @@ select {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
   border-radius: 999px;
   border: 1px solid transparent;
   background: transparent;
@@ -140,6 +142,20 @@ select {
     border-color 160ms ease,
     opacity 160ms ease,
     transform 160ms ease;
+}
+
+@media (min-width: 640px) {
+  .chrome-btn {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 379px) {
+  .chrome-btn {
+    width: 32px;
+    height: 32px;
+  }
 }
 
 .chrome-btn:hover:not(:disabled) {
@@ -168,11 +184,25 @@ select {
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   box-shadow: 0 8px 28px rgba(10, 16, 28, 0.12);
+  padding-top: env(safe-area-inset-top);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }
 
 .chrome-titlebar {
   background: var(--chrome-titlebar);
-  min-height: 36px;
+  min-height: 32px;
+}
+
+@media (min-width: 640px) {
+  .chrome-titlebar {
+    min-height: 36px;
+  }
+}
+
+.chrome-actions {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .chrome-surface-tab {
