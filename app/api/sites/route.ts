@@ -1,4 +1,4 @@
-import { ConflictError } from "@/lib/errors";
+import { BadRequestError, ConflictError } from "@/lib/errors";
 import { SiteService } from "@/lib/services/siteService";
 import { publishSiteBodySchema } from "@/lib/validation/site";
 import { zodErrorMessage } from "@/lib/validation/util";
@@ -13,6 +13,9 @@ export async function POST(request: Request) {
     const site = await SiteService.publish(parsed.data);
     return Response.json(site, { status: 201 });
   } catch (err) {
+    if (err instanceof BadRequestError) {
+      return Response.json({ message: err.message }, { status: 400 });
+    }
     if (err instanceof ConflictError) {
       return Response.json({ message: err.message }, { status: 409 });
     }

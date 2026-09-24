@@ -1,5 +1,5 @@
 ﻿import { extractText } from "../extractText";
-import { ConflictError } from "../errors";
+import { BadRequestError, ConflictError } from "../errors";
 import { normalizeAddress } from "../normalizeAddress";
 import { siteRepository } from "../repositories/siteRepository";
 import { sanitize } from "../sanitize";
@@ -15,6 +15,10 @@ export type PublishInput = {
 export const SiteService = {
   async publish(input: PublishInput): Promise<Site> {
     const address = normalizeAddress(input.address);
+    // Zod also rejects empty-after-normalize; keep the guard at the write path.
+    if (!address) {
+      throw new BadRequestError("address is invalid");
+    }
     const existing = await siteRepository.findByAddress(address);
     if (existing) {
       throw new ConflictError(`A site already exists at address "${address}".`);

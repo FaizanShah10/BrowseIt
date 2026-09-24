@@ -1,7 +1,13 @@
 ﻿import { z } from "zod";
+import { normalizeAddress } from "../normalizeAddress";
 
 export const publishSiteBodySchema = z.object({
-  address: z.string().min(1, "address is required"),
+  address: z
+    .string()
+    .min(1, "address is required")
+    .refine((raw) => normalizeAddress(raw).length > 0, {
+      message: "address is invalid",
+    }),
   title: z.string().min(1, "title is required"),
   html: z.string().min(1, "html is required"),
   authorId: z.string().min(1, "authorId is required"),

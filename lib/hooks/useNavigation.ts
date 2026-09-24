@@ -212,6 +212,12 @@ export function useNavigation(personId: string) {
     dispatch({ type: "UPDATE_SCROLL", scrollY });
   }, []);
 
+  /** Drop a cached address so a post-publish navigate re-fetches (e.g. was nowhere). */
+  const invalidateAddress = useCallback((rawAddress: string) => {
+    const address = normalizeAddress(rawAddress);
+    if (address) cacheRef.current.delete(address);
+  }, []);
+
   return {
     state,
     currentEntry,
@@ -219,6 +225,7 @@ export function useNavigation(personId: string) {
     back,
     forward,
     updateScroll,
+    invalidateAddress,
     pendingScrollY,
     canGoBack,
     canGoForward,

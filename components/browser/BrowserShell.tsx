@@ -62,6 +62,7 @@ export function BrowserShell() {
     canGoBack,
     canGoForward,
     isLoading,
+    invalidateAddress,
   } = useNavigation(personId);
 
   useEffect(() => {
@@ -191,7 +192,16 @@ export function BrowserShell() {
           void navigate(address, "search");
         }}
       />
-      <PublishForm open={publishOpen} onClose={() => setPublishOpen(false)} />
+      <PublishForm
+        open={publishOpen}
+        onClose={() => setPublishOpen(false)}
+        personId={personId}
+        personName={personName}
+        onPublished={(address) => {
+          invalidateAddress(address);
+          void navigate(address, "typed");
+        }}
+      />
     </div>
   );
 }
