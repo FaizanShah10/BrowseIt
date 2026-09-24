@@ -18,10 +18,10 @@ export type NavState = {
   index: number;
 };
 
-type NavAction =
-  | { type: "NAVIGATE"; entry: NavEntry }
-  | { type: "BACK" }
-  | { type: "FORWARD" }
+export type NavAction =
+  | { type: "NAVIGATE"; entry: NavEntry; scrollY: number }
+  | { type: "BACK"; scrollY: number }
+  | { type: "FORWARD"; scrollY: number }
   | { type: "UPDATE_SCROLL"; scrollY: number };
 
 type CachedSite = { html: string; siteId: string };
@@ -38,27 +38,58 @@ type VisitResponse = {
   visit: { _id: string };
 };
 
+function saveScrollOnCurrent(
+  entries: NavEntry[],
+  index: number,
+  scrollY: number,
+): NavEntry[] {
+  if (entries.length === 0) return entries;
+  const updated = [...entries];
+  updated[index] = { ...updated[index], scrollY };
+  return updated;
+}
+
 export function navigationReducer(state: NavState, action: NavAction): NavState {
   switch (action.type) {
     case "NAVIGATE": {
-      // Destroy forward history the moment a new branch is taken (§6.1).
-      const truncated = state.entries.slice(0, state.index + 1);
+      // Atomically save leave-scroll on the current entry, then branch (§6.1 / §6.2).
+      const withScroll = saveScrollOnCurrent(
+        state.entries,
+        state.index,
+        action.scrollY,
+      );
+      const truncated = withScroll.slice(0, state.index + 1);
       const entries = [...truncated, action.entry];
       return { entries, index: entries.length - 1 };
     }
-    case "BACK":
-      return { ...state, index: Math.max(0, state.index - 1) };
-    case "FORWARD":
+    case "BACK": {
+      const entries = saveScrollOnCurrent(
+        state.entries,
+        state.index,
+        action.scrollY,
+      );
       return {
-        ...state,
-        index: Math.min(state.entries.length - 1, state.index + 1),
+        entries,
+        index: Math.max(0, state.index - 1),
       };
+    }
+    case "FORWARD": {
+      const entries = saveScrollOnCurrent(
+        state.entries,
+        state.index,
+        action.scrollY,
+      );
+      return {
+        entries,
+        index: Math.min(entries.length - 1, state.index + 1),
+      };
+    }
     case "UPDATE_SCROLL": {
       if (state.entries.length === 0) return state;
-      const entries = state.entries.map((entry, i) =>
-        i === state.index ? { ...entry, scrollY: action.scrollY } : entry,
-      );
-      return { ...state, entries };
+      return {
+        ...state,
+        entries: saveScrollOnCurrent(state.entries, state.index, action.scrollY),
+      };
     }
     default:
       return state;
@@ -83,6 +114,10 @@ const INITIAL_STATE: NavState = { entries: [HOME_ENTRY], index: 0 };
 export function useNavigation(personId: string) {
   const [state, dispatch] = useReducer(navigationReducer, INITIAL_STATE);
   const cacheRef = useRef<Map<string, CacheValue>>(new Map());
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  /** Set by Back/Forward; PageViewer restores after iframe resize (or immediately for nowhere). */
+  const pendingScrollY = useRef<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const currentEntry =
@@ -146,7 +181,10 @@ export function useNavigation(personId: string) {
           scrollY: 0,
           visitId: body.visit._id,
         };
-        dispatch({ type: "NAVIGATE", entry });
+        // Clear any pending Back/Forward restore — new nav always starts at top.
+        pendingScrollY.current = null;
+        dispatch({ type: "NAVIGATE", entry, scrollY: window.scrollY });
+        window.scrollTo(0, 0);
       } finally {
         setIsLoading(false);
       }
@@ -154,13 +192,20 @@ export function useNavigation(personId: string) {
     [personId],
   );
 
-  // Stable: reducer floors/caps the index; callers gate on canGoBack/canGoForward.
   const back = useCallback(() => {
-    dispatch({ type: "BACK" });
+    const s = stateRef.current;
+    if (s.entries.length === 0 || s.index <= 0) return;
+    const target = s.entries[s.index - 1];
+    pendingScrollY.current = target?.scrollY ?? 0;
+    dispatch({ type: "BACK", scrollY: window.scrollY });
   }, []);
 
   const forward = useCallback(() => {
-    dispatch({ type: "FORWARD" });
+    const s = stateRef.current;
+    if (s.entries.length === 0 || s.index >= s.entries.length - 1) return;
+    const target = s.entries[s.index + 1];
+    pendingScrollY.current = target?.scrollY ?? 0;
+    dispatch({ type: "FORWARD", scrollY: window.scrollY });
   }, []);
 
   const updateScroll = useCallback((scrollY: number) => {
@@ -174,6 +219,7 @@ export function useNavigation(personId: string) {
     back,
     forward,
     updateScroll,
+    pendingScrollY,
     canGoBack,
     canGoForward,
     isLoading,

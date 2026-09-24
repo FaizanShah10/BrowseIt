@@ -61,6 +61,7 @@ export function BrowserShell() {
     navigate,
     back,
     forward,
+    pendingScrollY,
     canGoBack,
     canGoForward,
     isLoading,
@@ -165,7 +166,14 @@ export function BrowserShell() {
         />
 
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6 md:py-8">
-          <PageViewer entry={currentEntry} isLoading={isLoading} />
+          <PageViewer
+            entry={currentEntry}
+            isLoading={isLoading}
+            pendingScrollY={pendingScrollY}
+            onNavigate={(raw) => {
+              void navigate(raw, "link");
+            }}
+          />
         </main>
 
         {backgroundMode === "picture" && ready ? (
