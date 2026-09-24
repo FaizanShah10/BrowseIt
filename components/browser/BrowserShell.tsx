@@ -7,6 +7,7 @@ import { ChromeHeader } from "./ChromeHeader";
 import { PageViewer } from "./PageViewer";
 import { SidePanel } from "./SidePanel";
 
+
 const THEME_KEY = "browseit:theme";
 const BG_KEY = "browseit:background";
 const BG_IMAGE_KEY = "browseit:background-image";
@@ -57,7 +58,6 @@ export function BrowserShell() {
 
   const {
     currentEntry,
-    currentHtml,
     navigate,
     back,
     forward,
@@ -86,6 +86,24 @@ export function BrowserShell() {
     });
     return () => window.cancelAnimationFrame(boot);
   }, []);
+
+  // Alt+Left / Alt+Right — in-app Back/Forward; stop the host browser's own stack.
+  useEffect(() => {
+    function onKeyDown(e: KeyboardEvent) {
+      if (!e.altKey) return;
+      if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        if (canGoBack) back();
+        return;
+      }
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        if (canGoForward) forward();
+      }
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [canGoBack, canGoForward, back, forward]);
 
   function applyTheme(next: ThemeMode) {
     setTheme(next);
@@ -147,11 +165,7 @@ export function BrowserShell() {
         />
 
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6 md:py-8">
-          <PageViewer
-            entry={currentEntry}
-            html={currentHtml}
-            isLoading={isLoading}
-          />
+          <PageViewer entry={currentEntry} isLoading={isLoading} />
         </main>
 
         {backgroundMode === "picture" && ready ? (

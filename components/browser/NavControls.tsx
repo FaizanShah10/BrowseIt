@@ -3,7 +3,6 @@
 import { IconBack, IconForward, IconRefresh } from "./icons";
 
 type NavControlsProps = {
-  /** Visual only — later issues wire these to the navigation reducer. */
   canGoBack?: boolean;
   canGoForward?: boolean;
   onBack?: () => void;
