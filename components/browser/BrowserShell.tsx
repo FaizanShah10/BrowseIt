@@ -187,6 +187,9 @@ export function BrowserShell() {
         onHistoryNavigate={(address) => {
           void navigate(address, "history");
         }}
+        onSearchNavigate={(address) => {
+          void navigate(address, "search");
+        }}
       />
       <PublishForm open={publishOpen} onClose={() => setPublishOpen(false)} />
     </div>

@@ -224,6 +224,16 @@ select {
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
+/* Search field — same shell language as address, but quieter so it isn't mistaken for navigation. */
+.search-field {
+  border: 1px solid var(--surface-border);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.search-field[data-loading="true"] {
+  border-color: color-mix(in oklab, var(--accent) 40%, var(--surface-border));
+}
+
 .address-field[data-loading="true"] {
   border-color: color-mix(in oklab, var(--accent) 55%, var(--surface-border));
   box-shadow:

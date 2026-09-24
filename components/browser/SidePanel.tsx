@@ -4,6 +4,7 @@ import { useState } from "react";
 import { HistoryPanel } from "../history/HistoryPanel";
 import { SearchBar } from "../search/SearchBar";
 import { SearchResults } from "../search/SearchResults";
+import { useSearch } from "@/lib/hooks/useSearch";
 import { IconClose } from "./icons";
 
 type SidePanelProps = {
@@ -11,6 +12,7 @@ type SidePanelProps = {
   onClose: () => void;
   personId: string;
   onHistoryNavigate: (address: string) => void;
+  onSearchNavigate: (address: string) => void;
 };
 
 type PanelTab = "history" | "search";
@@ -20,14 +22,31 @@ export function SidePanel({
   onClose,
   personId,
   onHistoryNavigate,
+  onSearchNavigate,
 }: SidePanelProps) {
   const [tab, setTab] = useState<PanelTab>("history");
   const [query, setQuery] = useState("");
+
+  const searchEnabled = open && tab === "search";
+  const {
+    results,
+    activeQuery,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    error,
+    loadMore,
+  } = useSearch({ query, enabled: searchEnabled });
 
   if (!open) return null;
 
   function handleHistoryNavigate(address: string) {
     onHistoryNavigate(address);
+    onClose();
+  }
+
+  function handleSearchNavigate(address: string) {
+    onSearchNavigate(address);
     onClose();
   }
 
@@ -49,7 +68,9 @@ export function SidePanel({
             <button
               type="button"
               className={`flex-1 rounded-full px-3 py-2 text-sm font-medium transition lg:py-1.5 ${
-                tab === "history" ? "bg-[var(--surface-strong)] shadow-sm" : "text-[var(--muted)]"
+                tab === "history"
+                  ? "bg-[var(--surface-strong)] shadow-sm"
+                  : "text-[var(--muted)]"
               }`}
               onClick={() => setTab("history")}
             >
@@ -58,22 +79,46 @@ export function SidePanel({
             <button
               type="button"
               className={`flex-1 rounded-full px-3 py-2 text-sm font-medium transition lg:py-1.5 ${
-                tab === "search" ? "bg-[var(--surface-strong)] shadow-sm" : "text-[var(--muted)]"
+                tab === "search"
+                  ? "bg-[var(--surface-strong)] shadow-sm"
+                  : "text-[var(--muted)]"
               }`}
               onClick={() => setTab("search")}
             >
               Search
             </button>
           </div>
-          <button type="button" className="chrome-btn" aria-label="Close panel" onClick={onClose}>
+          <button
+            type="button"
+            className="chrome-btn"
+            aria-label="Close panel"
+            onClick={onClose}
+          >
             <IconClose />
           </button>
         </div>
 
         {tab === "search" ? (
           <div className="flex min-h-0 flex-1 flex-col pt-3">
-            <SearchBar value={query} onChange={setQuery} />
-            <SearchResults empty={false} />
+            <SearchBar
+              value={query}
+              onChange={setQuery}
+              isLoading={isLoading && Boolean(query.trim())}
+            />
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <SearchResults
+                query={query}
+                activeQuery={activeQuery}
+                results={results}
+                isLoading={isLoading}
+                isLoadingMore={isLoadingMore}
+                hasMore={hasMore}
+                error={error}
+                open={searchEnabled}
+                onLoadMore={loadMore}
+                onNavigate={handleSearchNavigate}
+              />
+            </div>
           </div>
         ) : (
           <div className="min-h-0 flex-1 overflow-hidden pt-3">
