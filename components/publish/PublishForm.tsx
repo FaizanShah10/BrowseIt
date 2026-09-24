@@ -1,14 +1,13 @@
 ﻿"use client";
 
 import { useId, useState, type FormEvent } from "react";
+import { usePerson } from "@/lib/context/PersonContext";
 import { normalizeAddress } from "@/lib/normalizeAddress";
 import { IconClose } from "../browser/icons";
 
 type PublishFormProps = {
   open: boolean;
   onClose: () => void;
-  personId: string;
-  personName: string;
   /** After a successful publish — navigate via the normal browsing path. */
   onPublished: (address: string) => void;
 };
@@ -20,15 +19,12 @@ type ApiErrorBody = {
 /**
  * Publish a new address with raw HTML.
  * Sanitization is server-side only (SiteService.publish → lib/sanitize).
- * No live preview — published pages render through PageViewer’s sandboxed iframe.
+ * Author comes from PersonContext live at submit (not a mount-time prop).
  */
-export function PublishForm({
-  open,
-  onClose,
-  personId,
-  personName,
-  onPublished,
-}: PublishFormProps) {
+export function PublishForm({ open, onClose, onPublished }: PublishFormProps) {
+  const { currentPerson } = usePerson();
+  const personId = currentPerson?._id ?? "";
+  const personName = currentPerson?.name ?? "";
   const titleId = useId();
   const addressId = useId();
   const pageTitleId = useId();

@@ -333,7 +333,7 @@ select {
     linear-gradient(160deg, #d7e4f2 0%, #edf2f7 45%, #cfdceb 100%);
 }
 
-:root[data-theme="dark"] .shell-backdrop {
+:root[data-theme="dark"] .shell-backdrop:not([data-mode="picture"]) {
   background:
     radial-gradient(1000px 560px at 12% 8%, rgba(45, 212, 191, 0.16), transparent 55%),
     radial-gradient(800px 480px at 88% 18%, rgba(56, 189, 248, 0.1), transparent 50%),
@@ -341,7 +341,7 @@ select {
 }
 
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .shell-backdrop {
+  :root:not([data-theme="light"]) .shell-backdrop:not([data-mode="picture"]) {
     background:
       radial-gradient(1000px 560px at 12% 8%, rgba(45, 212, 191, 0.16), transparent 55%),
       radial-gradient(800px 480px at 88% 18%, rgba(56, 189, 248, 0.1), transparent 50%),
@@ -349,42 +349,141 @@ select {
   }
 }
 
-.shell-backdrop[data-mode="picture"] {
-  background-color: var(--background);
+/* Picture mode — beat the plain gradient rules (incl. dark theme) with higher specificity. */
+.shell-backdrop[data-mode="picture"],
+:root[data-theme="dark"] .shell-backdrop[data-mode="picture"],
+:root[data-theme="light"] .shell-backdrop[data-mode="picture"] {
+  background-color: #0b1220;
   background-image: var(--shell-picture);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .shell-backdrop[data-mode="picture"] {
+    background-color: #0b1220;
+    background-image: var(--shell-picture);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+}
+
+/* Dim wash so chrome/cards stay readable — keep the photo visible underneath. */
 .shell-backdrop[data-mode="picture"]::after {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 0.12) 0%,
-    rgba(232, 238, 245, 0.08) 45%,
-    rgba(20, 32, 51, 0.2) 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 16, 28, 0.28) 0%,
+      rgba(10, 16, 28, 0.18) 40%,
+      rgba(10, 16, 28, 0.4) 100%
+    ),
+    radial-gradient(
+      120% 80% at 50% 20%,
+      rgba(13, 148, 136, 0.08),
+      transparent 60%
+    );
   pointer-events: none;
 }
 
 :root[data-theme="dark"] .shell-backdrop[data-mode="picture"]::after {
-  background: linear-gradient(
-    180deg,
-    rgba(10, 16, 28, 0.18) 0%,
-    rgba(10, 16, 28, 0.08) 40%,
-    rgba(10, 16, 28, 0.28) 100%
-  );
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 8, 16, 0.35) 0%,
+      rgba(4, 8, 16, 0.22) 42%,
+      rgba(4, 8, 16, 0.45) 100%
+    ),
+    radial-gradient(
+      120% 80% at 50% 20%,
+      rgba(45, 212, 191, 0.08),
+      transparent 60%
+    );
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .shell-backdrop[data-mode="picture"]::after {
-    background: linear-gradient(
-      180deg,
-      rgba(10, 16, 28, 0.18) 0%,
-      rgba(10, 16, 28, 0.08) 40%,
-      rgba(10, 16, 28, 0.28) 100%
-    );
+    background:
+      linear-gradient(
+        180deg,
+        rgba(4, 8, 16, 0.35) 0%,
+        rgba(4, 8, 16, 0.22) 42%,
+        rgba(4, 8, 16, 0.45) 100%
+      ),
+      radial-gradient(
+        120% 80% at 50% 20%,
+        rgba(45, 212, 191, 0.08),
+        transparent 60%
+      );
   }
+}
+
+/* Stronger frosted glass when a photo backdrop is active. */
+[data-background="picture"] {
+  --surface: rgba(255, 255, 255, 0.22);
+  --surface-strong: rgba(255, 255, 255, 0.38);
+  --surface-border: rgba(255, 255, 255, 0.28);
+  --glass-blur: 28px;
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+  --chrome-bg: rgba(255, 255, 255, 0.18);
+  --chrome-titlebar: rgba(255, 255, 255, 0.12);
+  --chrome-toolbar: rgba(255, 255, 255, 0.16);
+  --chrome-tab: rgba(255, 255, 255, 0.28);
+  --address-bg: rgba(255, 255, 255, 0.22);
+  --foreground: #f4f7fb;
+  --muted: rgba(244, 247, 251, 0.72);
+  --skeleton: rgba(255, 255, 255, 0.14);
+  --skeleton-shine: rgba(255, 255, 255, 0.28);
+}
+
+:root[data-theme="dark"] [data-background="picture"] {
+  --surface: rgba(12, 20, 36, 0.42);
+  --surface-strong: rgba(12, 20, 36, 0.62);
+  --surface-border: rgba(255, 255, 255, 0.16);
+  --chrome-bg: rgba(8, 14, 26, 0.45);
+  --chrome-titlebar: rgba(4, 8, 16, 0.55);
+  --chrome-toolbar: rgba(10, 16, 28, 0.5);
+  --chrome-tab: rgba(18, 28, 46, 0.55);
+  --address-bg: rgba(8, 14, 26, 0.48);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) [data-background="picture"] {
+    --surface: rgba(12, 20, 36, 0.42);
+    --surface-strong: rgba(12, 20, 36, 0.62);
+    --surface-border: rgba(255, 255, 255, 0.16);
+    --chrome-bg: rgba(8, 14, 26, 0.45);
+    --chrome-titlebar: rgba(4, 8, 16, 0.55);
+    --chrome-toolbar: rgba(10, 16, 28, 0.5);
+    --chrome-tab: rgba(18, 28, 46, 0.55);
+    --address-bg: rgba(8, 14, 26, 0.48);
+  }
+}
+
+[data-background="picture"] .glass,
+[data-background="picture"] .glass-strong {
+  background: var(--surface);
+  border-color: var(--surface-border);
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.35);
+}
+
+[data-background="picture"] .glass-strong {
+  background: var(--surface-strong);
+  backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(1.4);
+  -webkit-backdrop-filter: blur(calc(var(--glass-blur) + 8px)) saturate(1.4);
+}
+
+[data-background="picture"] .browser-chrome {
+  background: var(--chrome-bg);
+  border-bottom-color: var(--surface-border);
+  backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(1.3);
 }

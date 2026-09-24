@@ -243,4 +243,18 @@ describe("navigationReducer", () => {
     expect(next.entries[1].scrollY).toBe(450);
     expect(next.entries[2].scrollY).toBe(0);
   });
+
+  it("RESET returns to the idle home stack", () => {
+    const start: NavState = {
+      entries: [
+        HOME_ENTRY,
+        entry({ address: "tidepool.zz" }),
+        entry({ address: "garden.zz" }),
+      ],
+      index: 2,
+    };
+    const next = navigationReducer(start, { type: "RESET" });
+    expect(next.entries).toEqual([HOME_ENTRY]);
+    expect(next.index).toBe(0);
+  });
 });

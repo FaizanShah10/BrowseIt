@@ -1,5 +1,5 @@
 import { BrowserShell } from "@/components/browser/BrowserShell";
-import { PersonProvider } from "@/hooks/usePersonContext";
+import { PersonProvider } from "@/lib/context/PersonContext";
 import { PersonService } from "@/lib/services/personService";
 
 export default async function Home() {

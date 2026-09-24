@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { usePersonContext } from "@/hooks/usePersonContext";
+import { usePerson } from "@/lib/context/PersonContext";
 import { LiveClock } from "./LiveClock";
 
 type HomeSummary = {
@@ -33,7 +33,7 @@ const STATS = [
  * Stats and recently-visited come from GET /api/home for the current person.
  */
 export function IdleHome({ onNavigate }: IdleHomeProps) {
-  const { personId } = usePersonContext();
+  const { personId } = usePerson();
   const [summary, setSummary] = useState<HomeSummary | null>(null);
   const [loading, setLoading] = useState(false);
 

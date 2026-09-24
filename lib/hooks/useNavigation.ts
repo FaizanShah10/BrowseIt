@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { normalizeAddress } from "@/lib/normalizeAddress";
 import type { VisitMethod } from "@/types";
 
@@ -22,7 +22,8 @@ export type NavAction =
   | { type: "NAVIGATE"; entry: NavEntry; scrollY: number }
   | { type: "BACK"; scrollY: number }
   | { type: "FORWARD"; scrollY: number }
-  | { type: "UPDATE_SCROLL"; scrollY: number };
+  | { type: "UPDATE_SCROLL"; scrollY: number }
+  | { type: "RESET" };
 
 type CachedSite = { html: string; siteId: string };
 
@@ -48,6 +49,21 @@ function saveScrollOnCurrent(
   updated[index] = { ...updated[index], scrollY };
   return updated;
 }
+
+/** New-tab / idle home — always the root of the stack so Back can return here. */
+export const HOME_ENTRY: NavEntry = {
+  address: "",
+  siteId: null,
+  html: null,
+  scrollY: 0,
+  visitId: "home",
+};
+
+export function isHomeEntry(entry: NavEntry | null | undefined): boolean {
+  return !entry || entry.address === "";
+}
+
+const INITIAL_STATE: NavState = { entries: [HOME_ENTRY], index: 0 };
 
 export function navigationReducer(state: NavState, action: NavAction): NavState {
   switch (action.type) {
@@ -91,25 +107,13 @@ export function navigationReducer(state: NavState, action: NavAction): NavState 
         entries: saveScrollOnCurrent(state.entries, state.index, action.scrollY),
       };
     }
+    case "RESET":
+      // Person switch — stack is per-person; site HTML cache is not.
+      return INITIAL_STATE;
     default:
       return state;
   }
 }
-
-/** New-tab / idle home — always the root of the stack so Back can return here. */
-export const HOME_ENTRY: NavEntry = {
-  address: "",
-  siteId: null,
-  html: null,
-  scrollY: 0,
-  visitId: "home",
-};
-
-export function isHomeEntry(entry: NavEntry | null | undefined): boolean {
-  return !entry || entry.address === "";
-}
-
-const INITIAL_STATE: NavState = { entries: [HOME_ENTRY], index: 0 };
 
 export function useNavigation(personId: string) {
   const [state, dispatch] = useReducer(navigationReducer, INITIAL_STATE);
@@ -118,7 +122,16 @@ export function useNavigation(personId: string) {
   stateRef.current = state;
   /** Set by Back/Forward; PageViewer restores after iframe resize (or immediately for nowhere). */
   const pendingScrollY = useRef<number | null>(null);
+  const personIdRef = useRef(personId);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Person switch: reset the in-memory stack. Leave the site HTML cache alone.
+  useEffect(() => {
+    if (personIdRef.current === personId) return;
+    personIdRef.current = personId;
+    pendingScrollY.current = null;
+    dispatch({ type: "RESET" });
+  }, [personId]);
 
   const currentEntry =
     state.entries.length === 0 ? null : (state.entries[state.index] ?? null);

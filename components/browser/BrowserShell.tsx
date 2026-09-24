@@ -2,10 +2,11 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { PublishForm } from "../publish/PublishForm";
-import { usePersonContext } from "@/hooks/usePersonContext";
+import { usePerson } from "@/lib/context/PersonContext";
 import { useNavigation } from "@/lib/hooks/useNavigation";
 import { ChromeHeader } from "./ChromeHeader";
 import { PageViewer } from "./PageViewer";
+import { PersonGate } from "./PersonPicker";
 import { SidePanel } from "./SidePanel";
 
 const THEME_KEY = "browseit:theme";
@@ -13,9 +14,16 @@ const BG_KEY = "browseit:background";
 const BG_IMAGE_KEY = "browseit:background-image";
 
 const BACKGROUNDS = [
-  { id: "dawn", src: "/backgrounds/dawn.svg", credit: "Dawn — generated SVG backdrop" },
-  { id: "dusk", src: "/backgrounds/dusk.svg", credit: "Dusk — generated SVG backdrop" },
-  { id: "mist", src: "/backgrounds/mist.svg", credit: "Mist — generated SVG backdrop" },
+  {
+    id: "matterhorn",
+    src: "/backgrounds/background1.jpg",
+    credit: "Matterhorn at dawn — photo backdrop",
+  },
+  {
+    id: "alpine",
+    src: "/backgrounds/background2.jpg",
+    credit: "Alpine vista — photo backdrop",
+  },
 ] as const;
 
 type ThemeMode = "light" | "dark";
@@ -45,10 +53,11 @@ function systemTheme(): ThemeMode {
  * BrowseIt app shell — chrome + navigation + history panel.
  */
 export function BrowserShell() {
-  const { person, personId } = usePersonContext();
+  const { currentPerson, personId } = usePerson();
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>("plain");
-  const [backgroundId, setBackgroundId] = useState<(typeof BACKGROUNDS)[number]["id"]>("dawn");
+  const [backgroundId, setBackgroundId] =
+    useState<(typeof BACKGROUNDS)[number]["id"]>("matterhorn");
   const [panelOpen, setPanelOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -115,22 +124,36 @@ export function BrowserShell() {
   }
 
   function toggleBackground() {
-    const next: BackgroundMode = backgroundMode === "plain" ? "picture" : "plain";
-    setBackgroundMode(next);
-    writeStorage(BG_KEY, next);
-    if (next === "picture") {
-      const idx = BACKGROUNDS.findIndex((b) => b.id === backgroundId);
-      const cycled = BACKGROUNDS[(idx + 1) % BACKGROUNDS.length];
-      setBackgroundId(cycled.id);
-      writeStorage(BG_IMAGE_KEY, cycled.id);
+    if (backgroundMode === "plain") {
+      // Enter picture mode on the primary photo.
+      setBackgroundMode("picture");
+      writeStorage(BG_KEY, "picture");
+      setBackgroundId("matterhorn");
+      writeStorage(BG_IMAGE_KEY, "matterhorn");
+      return;
     }
+    // Already on a picture — cycle photos, or leave picture mode after the last.
+    const idx = BACKGROUNDS.findIndex((b) => b.id === backgroundId);
+    const nextIdx = idx + 1;
+    if (nextIdx >= BACKGROUNDS.length) {
+      setBackgroundMode("plain");
+      writeStorage(BG_KEY, "plain");
+      return;
+    }
+    const cycled = BACKGROUNDS[nextIdx];
+    setBackgroundId(cycled.id);
+    writeStorage(BG_IMAGE_KEY, cycled.id);
   }
 
   const picture = BACKGROUNDS.find((b) => b.id === backgroundId) ?? BACKGROUNDS[0];
-  const personName = person?.name ?? "";
+  const personName = currentPerson?.name ?? "";
+  const hasPerson = Boolean(personId);
 
   return (
-    <div className="relative flex min-h-full flex-col overflow-x-hidden">
+    <div
+      className="relative flex min-h-full flex-col overflow-x-hidden"
+      data-background={backgroundMode}
+    >
       <div
         className="shell-backdrop"
         data-mode={backgroundMode}
@@ -157,9 +180,13 @@ export function BrowserShell() {
           backgroundMode={backgroundMode}
           onToggleBackground={toggleBackground}
           publishOpen={publishOpen}
-          onOpenPublish={() => setPublishOpen(true)}
+          onOpenPublish={() => {
+            if (hasPerson) setPublishOpen(true);
+          }}
           panelOpen={panelOpen}
-          onOpenPanel={() => setPanelOpen(true)}
+          onOpenPanel={() => {
+            if (hasPerson) setPanelOpen(true);
+          }}
           personName={personName}
         />
 
@@ -185,7 +212,7 @@ export function BrowserShell() {
       </div>
 
       <SidePanel
-        open={panelOpen}
+        open={panelOpen && hasPerson}
         onClose={() => setPanelOpen(false)}
         personId={personId}
         onHistoryNavigate={(address) => {
@@ -196,15 +223,14 @@ export function BrowserShell() {
         }}
       />
       <PublishForm
-        open={publishOpen}
+        open={publishOpen && hasPerson}
         onClose={() => setPublishOpen(false)}
-        personId={personId}
-        personName={personName}
         onPublished={(address) => {
           invalidateAddress(address);
           void navigate(address, "typed");
         }}
       />
+      <PersonGate />
     </div>
   );
 }
