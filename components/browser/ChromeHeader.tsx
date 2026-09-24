@@ -30,7 +30,6 @@ type ChromeHeaderProps = {
   panelOpen: boolean;
   onOpenPanel: () => void;
   personName?: string;
-  onPersonChange?: (name: string) => void;
 };
 
 /**
@@ -53,8 +52,7 @@ export function ChromeHeader({
   onOpenPublish,
   panelOpen,
   onOpenPanel,
-  personName = "Ada Lovelace",
-  onPersonChange,
+  personName = "",
 }: ChromeHeaderProps) {
   const initials = personName
     .split(/\s+/)
@@ -92,7 +90,7 @@ export function ChromeHeader({
           />
 
           <div className="chrome-actions flex min-w-0 items-center justify-end gap-0.5 sm:gap-1 md:col-start-3 md:row-start-1 md:gap-1.5">
-            <PersonPicker value={personName} onChange={onPersonChange} />
+            <PersonPicker />
 
             <button
               type="button"

@@ -1,25 +1,20 @@
 ﻿"use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { usePersonContext } from "@/hooks/usePersonContext";
 import { IconChevron, IconPerson } from "./icons";
 
-// Static sample people — real Person list arrives with the data-layer issues.
-const SAMPLE_PEOPLE = ["Ada Lovelace", "Grace Hopper", "Alan Turing"] as const;
-
-type PersonPickerProps = {
-  value?: string;
-  onChange?: (name: string) => void;
-};
-
-export function PersonPicker({
-  value = SAMPLE_PEOPLE[0],
-  onChange,
-}: PersonPickerProps) {
+/**
+ * Identity picker — reads/writes PersonContext (sessionStorage-backed).
+ */
+export function PersonPicker() {
+  const { people, person, personId, setPersonId } = usePersonContext();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const listId = useId();
-  const current = value;
-  const firstName = current.split(/\s+/)[0] ?? current;
+
+  const displayName = person?.name ?? "—";
+  const firstName = displayName.split(/\s+/)[0] ?? displayName;
 
   useEffect(() => {
     if (!open) return;
@@ -32,6 +27,10 @@ export function PersonPicker({
     return () => document.removeEventListener("mousedown", onPointerDown);
   }, [open]);
 
+  if (people.length === 0) {
+    return null;
+  }
+
   return (
     <div ref={rootRef} className="relative">
       <button
@@ -40,7 +39,7 @@ export function PersonPicker({
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
-        aria-label={`Current person: ${current}`}
+        aria-label={`Current person: ${displayName}`}
         onClick={() => setOpen((v) => !v)}
       >
         <IconPerson size={15} />
@@ -48,7 +47,7 @@ export function PersonPicker({
         <span className="hidden truncate font-medium min-[400px]:inline lg:hidden">
           {firstName}
         </span>
-        <span className="hidden truncate font-medium lg:inline">{current}</span>
+        <span className="hidden truncate font-medium lg:inline">{displayName}</span>
         <IconChevron size={14} className="hidden opacity-60 min-[400px]:inline" />
       </button>
 
@@ -59,17 +58,17 @@ export function PersonPicker({
           aria-label="People"
           className="glass-strong absolute right-0 z-30 mt-2 max-h-[min(16rem,50vh)] min-w-[12rem] overflow-y-auto overflow-x-hidden rounded-[var(--radius-sm)] py-1 animate-fade-up"
         >
-          {SAMPLE_PEOPLE.map((name) => (
-            <li key={name} role="option" aria-selected={name === current}>
+          {people.map((p) => (
+            <li key={p._id} role="option" aria-selected={p._id === personId}>
               <button
                 type="button"
                 className="flex w-full px-3 py-2.5 text-left text-sm hover:bg-[var(--accent-soft)]"
                 onClick={() => {
-                  onChange?.(name);
+                  setPersonId(p._id);
                   setOpen(false);
                 }}
               >
-                {name}
+                {p.name}
               </button>
             </li>
           ))}

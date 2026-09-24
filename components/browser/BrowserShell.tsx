@@ -2,18 +2,15 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { PublishForm } from "../publish/PublishForm";
+import { usePersonContext } from "@/hooks/usePersonContext";
 import { useNavigation } from "@/lib/hooks/useNavigation";
 import { ChromeHeader } from "./ChromeHeader";
 import { PageViewer } from "./PageViewer";
 import { SidePanel } from "./SidePanel";
 
-
 const THEME_KEY = "browseit:theme";
 const BG_KEY = "browseit:background";
 const BG_IMAGE_KEY = "browseit:background-image";
-
-// TODO: wire PersonContext — seeded person from issue #4 verification.
-const PERSON_ID = "person:ayesha";
 
 const BACKGROUNDS = [
   { id: "dawn", src: "/backgrounds/dawn.svg", credit: "Dawn — generated SVG backdrop" },
@@ -45,13 +42,13 @@ function systemTheme(): ThemeMode {
 }
 
 /**
- * BrowseIt app shell — chrome + typed navigation (address bar / page viewer).
+ * BrowseIt app shell — chrome + navigation + history panel.
  */
 export function BrowserShell() {
+  const { person, personId } = usePersonContext();
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>("plain");
   const [backgroundId, setBackgroundId] = useState<(typeof BACKGROUNDS)[number]["id"]>("dawn");
-  const [personName, setPersonName] = useState("Ayesha");
   const [panelOpen, setPanelOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
   const [ready, setReady] = useState(false);
@@ -65,7 +62,7 @@ export function BrowserShell() {
     canGoBack,
     canGoForward,
     isLoading,
-  } = useNavigation(PERSON_ID);
+  } = useNavigation(personId);
 
   useEffect(() => {
     const boot = window.requestAnimationFrame(() => {
@@ -129,6 +126,7 @@ export function BrowserShell() {
   }
 
   const picture = BACKGROUNDS.find((b) => b.id === backgroundId) ?? BACKGROUNDS[0];
+  const personName = person?.name ?? "";
 
   return (
     <div className="relative flex min-h-full flex-col overflow-x-hidden">
@@ -162,7 +160,6 @@ export function BrowserShell() {
           panelOpen={panelOpen}
           onOpenPanel={() => setPanelOpen(true)}
           personName={personName}
-          onPersonChange={setPersonName}
         />
 
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6 md:py-8">
@@ -186,7 +183,10 @@ export function BrowserShell() {
       <SidePanel
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        showEmpty={false}
+        personId={personId}
+        onHistoryNavigate={(address) => {
+          void navigate(address, "history");
+        }}
       />
       <PublishForm open={publishOpen} onClose={() => setPublishOpen(false)} />
     </div>

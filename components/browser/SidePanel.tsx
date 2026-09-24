@@ -9,17 +9,27 @@ import { IconClose } from "./icons";
 type SidePanelProps = {
   open: boolean;
   onClose: () => void;
-  /** Preview empty states for History / Search placeholders. */
-  showEmpty?: boolean;
+  personId: string;
+  onHistoryNavigate: (address: string) => void;
 };
 
 type PanelTab = "history" | "search";
 
-export function SidePanel({ open, onClose, showEmpty = false }: SidePanelProps) {
+export function SidePanel({
+  open,
+  onClose,
+  personId,
+  onHistoryNavigate,
+}: SidePanelProps) {
   const [tab, setTab] = useState<PanelTab>("history");
   const [query, setQuery] = useState("");
 
   if (!open) return null;
+
+  function handleHistoryNavigate(address: string) {
+    onHistoryNavigate(address);
+    onClose();
+  }
 
   return (
     <>
@@ -63,11 +73,15 @@ export function SidePanel({ open, onClose, showEmpty = false }: SidePanelProps) 
         {tab === "search" ? (
           <div className="flex min-h-0 flex-1 flex-col pt-3">
             <SearchBar value={query} onChange={setQuery} />
-            <SearchResults empty={showEmpty} />
+            <SearchResults empty={false} />
           </div>
         ) : (
-          <div className="min-h-0 flex-1 overflow-y-auto pt-3">
-            <HistoryPanel empty={showEmpty} />
+          <div className="min-h-0 flex-1 overflow-hidden pt-3">
+            <HistoryPanel
+              personId={personId}
+              open={open && tab === "history"}
+              onNavigate={handleHistoryNavigate}
+            />
           </div>
         )}
       </aside>

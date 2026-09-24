@@ -158,3 +158,27 @@ export function IconGrid({ size = 14, className }: IconProps) {
     </>,
   );
 }
+
+/** Subtle visit-method marks for the History panel. */
+export function IconTyped({ size = 14, className }: IconProps) {
+  return base(
+    size,
+    className,
+    <>
+      <path d="M4 18h16" />
+      <path d="M8 14l2-8h4l2 8" />
+      <path d="M9.5 11h5" />
+    </>,
+  );
+}
+
+export function IconLink({ size = 14, className }: IconProps) {
+  return base(
+    size,
+    className,
+    <>
+      <path d="M10 13a5 5 0 0 0 7.5.5l1.5-1.5a5 5 0 0 0-7-7L10.5 6.5" />
+      <path d="M14 11a5 5 0 0 0-7.5-.5L5 12a5 5 0 0 0 7 7l1.5-1.5" />
+    </>,
+  );
+}

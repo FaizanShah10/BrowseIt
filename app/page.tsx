@@ -1,5 +1,13 @@
 import { BrowserShell } from "@/components/browser/BrowserShell";
+import { PersonProvider } from "@/hooks/usePersonContext";
+import { PersonService } from "@/lib/services/personService";
 
-export default function Home() {
-  return <BrowserShell />;
+export default async function Home() {
+  const people = await PersonService.list();
+
+  return (
+    <PersonProvider people={people}>
+      <BrowserShell />
+    </PersonProvider>
+  );
 }
