@@ -164,10 +164,16 @@ export function useNavigation(personId: string) {
 
         // Every navigation logs a Visit — cache hit or nowhere included.
         // Back/Forward never reach here — they only move the stack pointer.
+        const previous = stateRef.current.entries[stateRef.current.index];
+        const fromVisitId =
+          previous && previous.address !== "" && previous.visitId !== "home"
+            ? previous.visitId
+            : null;
+
         const visitRes = await fetch("/api/visits", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ personId, address, method }),
+          body: JSON.stringify({ personId, address, method, fromVisitId }),
         });
         if (!visitRes.ok) {
           throw new Error(`Failed to record visit (${visitRes.status})`);

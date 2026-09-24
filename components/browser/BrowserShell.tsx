@@ -171,6 +171,9 @@ export function BrowserShell() {
             onNavigate={(raw) => {
               void navigate(raw, "link");
             }}
+            onHomeNavigate={(raw) => {
+              void navigate(raw, "history");
+            }}
           />
         </main>
 

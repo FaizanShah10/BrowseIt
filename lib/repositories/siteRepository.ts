@@ -54,6 +54,43 @@ export const siteRepository = {
     return toSite(doc.toObject());
   },
 
+  /** Idempotent write for seed — updates body/title when re-run. */
+  async upsert(input: CreateSiteInput): Promise<Site> {
+    await connect();
+    const now = new Date();
+    const doc = await SiteModel.findByIdAndUpdate(
+      input._id,
+      {
+        $set: {
+          address: input.address,
+          title: input.title,
+          html: input.html,
+          textContent: input.textContent,
+          authorId: input.authorId,
+          updatedAt: now,
+        },
+        $setOnInsert: {
+          _id: input._id,
+          createdAt: now,
+        },
+      },
+      { upsert: true, returnDocument: "after" },
+    ).lean();
+    return toSite(doc as NonNullable<typeof doc> & { _id: string });
+  },
+
+  async count(): Promise<number> {
+    await connect();
+    return SiteModel.countDocuments();
+  },
+
+  async findByAddresses(addresses: string[]): Promise<Site[]> {
+    await connect();
+    if (addresses.length === 0) return [];
+    const docs = await SiteModel.find({ address: { $in: addresses } }).lean();
+    return docs.map((d) => toSite(d as typeof d & { _id: string }));
+  },
+
   async textSearch(
     q: string,
     cursor: string | null,

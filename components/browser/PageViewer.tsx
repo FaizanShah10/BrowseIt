@@ -20,6 +20,8 @@ type PageViewerProps = {
   pendingScrollY: MutableRefObject<number | null>;
   /** Link clicks from the sandboxed frame (method: 'link'). */
   onNavigate?: (rawAddress: string) => void;
+  /** Recently-visited tiles on idle home (method: 'history'). */
+  onHomeNavigate?: (rawAddress: string) => void;
 };
 
 /**
@@ -32,6 +34,7 @@ export function PageViewer({
   isLoading,
   pendingScrollY,
   onNavigate,
+  onHomeNavigate,
 }: PageViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeHeight, setIframeHeight] = useState(280);
@@ -101,7 +104,13 @@ export function PageViewer({
   // Empty stack or empty-address home entry — default clock view, not "nowhere".
   if (isHomeEntry(entry)) {
     if (isLoading) return <LoadingPlaceholder />;
-    return <IdleHome />;
+    return (
+      <IdleHome
+        onNavigate={(address) => {
+          onHomeNavigate?.(address);
+        }}
+      />
+    );
   }
 
   // Dead address — siteId null means nowhere (html is also null).
