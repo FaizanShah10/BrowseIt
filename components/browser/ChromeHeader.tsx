@@ -15,7 +15,12 @@ import { PersonPicker } from "./PersonPicker";
 
 type ChromeHeaderProps = {
   address: string;
-  onAddressChange: (value: string) => void;
+  isLoading: boolean;
+  onNavigate: (rawAddress: string) => void;
+  canGoBack: boolean;
+  canGoForward: boolean;
+  onBack: () => void;
+  onForward: () => void;
   theme: "light" | "dark";
   onToggleTheme: () => void;
   backgroundMode: "plain" | "picture";
@@ -31,14 +36,15 @@ type ChromeHeaderProps = {
 /**
  * Two-tier browser chrome: title strip + nav/address row.
  * One surface only — the “BrowseIt” chip is decorative window chrome, not a tab strip.
- *
- * Breakpoints (CSS grid, single action cluster — no duplicate DOM):
- * - < md: nav + actions on row 1, address full-width on row 2
- * - md+: single toolbar row
  */
 export function ChromeHeader({
   address,
-  onAddressChange,
+  isLoading,
+  onNavigate,
+  canGoBack,
+  canGoForward,
+  onBack,
+  onForward,
   theme,
   onToggleTheme,
   backgroundMode,
@@ -78,7 +84,12 @@ export function ChromeHeader({
 
       <div className="chrome-toolbar px-2 py-1.5 sm:px-3 sm:py-2">
         <div className="grid grid-cols-[auto_minmax(0,1fr)] items-center gap-x-1 gap-y-1.5 sm:gap-x-2 md:grid-cols-[auto_minmax(0,1fr)_auto] md:gap-3">
-          <NavControls canGoBack={false} canGoForward={false} />
+          <NavControls
+            canGoBack={canGoBack}
+            canGoForward={canGoForward}
+            onBack={onBack}
+            onForward={onForward}
+          />
 
           <div className="chrome-actions flex min-w-0 items-center justify-end gap-0.5 sm:gap-1 md:col-start-3 md:row-start-1 md:gap-1.5">
             <PersonPicker value={personName} onChange={onPersonChange} />
@@ -141,7 +152,11 @@ export function ChromeHeader({
           </div>
 
           <div className="col-span-2 min-w-0 md:col-span-1 md:col-start-2 md:row-start-1">
-            <AddressBar value={address} onChange={onAddressChange} />
+            <AddressBar
+              address={address}
+              isLoading={isLoading}
+              onNavigate={onNavigate}
+            />
           </div>
         </div>
       </div>

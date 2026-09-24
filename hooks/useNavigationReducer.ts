@@ -1,2 +1,7 @@
-﻿// useNavigationReducer — session stack { entries[], index } with truncation.
-// Implemented in issue #6 (browser UI). Scaffolded by issue #1.
+﻿// Re-export — navigation lives in lib/hooks/useNavigation (typed-nav issue).
+export {
+  useNavigation,
+  navigationReducer,
+  type NavEntry,
+  type NavState,
+} from "@/lib/hooks/useNavigation";

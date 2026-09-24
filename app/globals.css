@@ -221,6 +221,30 @@ select {
   background: var(--address-bg);
   border: 1px solid var(--surface-border);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.address-field[data-loading="true"] {
+  border-color: color-mix(in oklab, var(--accent) 55%, var(--surface-border));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent);
+}
+
+.address-spinner {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid color-mix(in oklab, var(--accent) 25%, transparent);
+  border-top-color: var(--accent);
+  animation: address-spin 0.7s linear infinite;
+}
+
+@keyframes address-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .chrome-divider {

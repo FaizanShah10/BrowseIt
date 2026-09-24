@@ -7,7 +7,7 @@
 
 **Assessment:** Full Stack Technical Test · Web Engineering
 **Budget:** ~8 focused hours across 3 calendar days
-**Author:** Faizan
+**Author:** Arslan
 
 **Reading order:** Requirements → Modules → Domain → Architecture → Decisions →
 Hard Problems → Seed → Cut List → Plan → Definition of Done

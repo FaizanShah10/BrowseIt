@@ -1,3 +1,6 @@
-// People API — list people for the picker.
-// Implemented in issue #4 (API routes). Scaffolded by issue #1.
-export {};
+import { PersonService } from "@/lib/services/personService";
+
+export async function GET() {
+  const people = await PersonService.list();
+  return Response.json(people);
+}

@@ -1,17 +1,40 @@
 ﻿"use client";
 
-import { useId } from "react";
+import { useEffect, useId, useState, type KeyboardEvent } from "react";
 import { IconGlobe } from "./icons";
 
 type AddressBarProps = {
-  value?: string;
-  onChange?: (value: string) => void;
+  /** Normalized address from the current nav entry (after a successful navigation). */
+  address?: string;
+  isLoading?: boolean;
+  onNavigate: (rawAddress: string) => void;
   className?: string;
 };
 
-/** Visual-only address field. Navigation wiring lands in a later issue. */
-export function AddressBar({ value = "", onChange, className = "" }: AddressBarProps) {
+/**
+ * Controlled address field. Submits only on Enter — never on blur.
+ * Displays the normalized address after navigation; draft while typing.
+ */
+export function AddressBar({
+  address = "",
+  isLoading = false,
+  onNavigate,
+  className = "",
+}: AddressBarProps) {
   const id = useId();
+  const [draft, setDraft] = useState(address);
+
+  useEffect(() => {
+    setDraft(address);
+  }, [address]);
+
+  function handleKeyDown(e: KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const value = draft.trim();
+    if (!value || isLoading) return;
+    onNavigate(value);
+  }
 
   return (
     <div className={`relative w-full ${className}`}>
@@ -25,13 +48,24 @@ export function AddressBar({ value = "", onChange, className = "" }: AddressBarP
       <input
         id={id}
         type="text"
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="Type an address, e.g. tidepool.zz"
         autoComplete="off"
         spellCheck={false}
-        className="address-field w-full rounded-full py-2 pr-4 pl-10 text-[14px] text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:ring-2 focus:ring-[var(--ring)]"
+        aria-busy={isLoading}
+        data-loading={isLoading ? "true" : undefined}
+        className="address-field w-full rounded-full py-2 pr-10 pl-10 text-[14px] text-[var(--foreground)] outline-none placeholder:text-[var(--muted)] focus:ring-2 focus:ring-[var(--ring)]"
       />
+      {isLoading ? (
+        <span
+          className="pointer-events-none absolute top-1/2 right-3.5 z-10 flex -translate-y-1/2"
+          aria-hidden="true"
+        >
+          <span className="address-spinner" />
+        </span>
+      ) : null}
     </div>
   );
 }

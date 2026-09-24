@@ -6,7 +6,7 @@ export function NowherePlaceholder({ address = "lost.harbor.zz" }: { address?: s
         Nowhere
       </p>
       <h2 className="font-display text-2xl font-semibold tracking-tight sm:text-3xl md:text-4xl">
-        This address leads nowhere
+        This address doesn&apos;t lead anywhere
       </h2>
       <p className="max-w-md text-sm text-[var(--muted)] sm:text-base">
         <span className="break-all font-medium text-[var(--foreground)]">{address}</span> is not

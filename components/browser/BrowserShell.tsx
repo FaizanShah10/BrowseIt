@@ -2,12 +2,17 @@
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { PublishForm } from "../publish/PublishForm";
+import { useNavigation } from "@/lib/hooks/useNavigation";
 import { ChromeHeader } from "./ChromeHeader";
-import { PageViewer, type ViewerPreview } from "./PageViewer";
+import { PageViewer } from "./PageViewer";
 import { SidePanel } from "./SidePanel";
+
 const THEME_KEY = "browseit:theme";
 const BG_KEY = "browseit:background";
 const BG_IMAGE_KEY = "browseit:background-image";
+
+// TODO: wire PersonContext — seeded person from issue #4 verification.
+const PERSON_ID = "person:ayesha";
 
 const BACKGROUNDS = [
   { id: "dawn", src: "/backgrounds/dawn.svg", credit: "Dawn — generated SVG backdrop" },
@@ -39,20 +44,27 @@ function systemTheme(): ThemeMode {
 }
 
 /**
- * BrowseIt app shell — static chrome for issue #3.
- * No services, repositories, or fetch. Panel / theme / background are UI-only state.
+ * BrowseIt app shell — chrome + typed navigation (address bar / page viewer).
  */
 export function BrowserShell() {
   const [theme, setTheme] = useState<ThemeMode>("light");
   const [backgroundMode, setBackgroundMode] = useState<BackgroundMode>("plain");
   const [backgroundId, setBackgroundId] = useState<(typeof BACKGROUNDS)[number]["id"]>("dawn");
-  const [address, setAddress] = useState("");
-  const [personName, setPersonName] = useState("Ada Lovelace");
+  const [personName, setPersonName] = useState("Ayesha");
   const [panelOpen, setPanelOpen] = useState(false);
   const [publishOpen, setPublishOpen] = useState(false);
-  const [preview, setPreview] = useState<ViewerPreview>("idle");
-  const [showEmptyPanel, setShowEmptyPanel] = useState(false);
   const [ready, setReady] = useState(false);
+
+  const {
+    currentEntry,
+    currentHtml,
+    navigate,
+    back,
+    forward,
+    canGoBack,
+    canGoForward,
+    isLoading,
+  } = useNavigation(PERSON_ID);
 
   useEffect(() => {
     const boot = window.requestAnimationFrame(() => {
@@ -90,7 +102,6 @@ export function BrowserShell() {
     setBackgroundMode(next);
     writeStorage(BG_KEY, next);
     if (next === "picture") {
-      // Cycle picture when entering picture mode repeatedly from plain.
       const idx = BACKGROUNDS.findIndex((b) => b.id === backgroundId);
       const cycled = BACKGROUNDS[(idx + 1) % BACKGROUNDS.length];
       setBackgroundId(cycled.id);
@@ -114,8 +125,15 @@ export function BrowserShell() {
 
       <div className="relative z-10 flex min-h-full flex-col">
         <ChromeHeader
-          address={address}
-          onAddressChange={setAddress}
+          address={currentEntry?.address ?? ""}
+          isLoading={isLoading}
+          onNavigate={(raw) => {
+            void navigate(raw, "typed");
+          }}
+          canGoBack={canGoBack}
+          canGoForward={canGoForward}
+          onBack={back}
+          onForward={forward}
           theme={theme}
           onToggleTheme={toggleTheme}
           backgroundMode={backgroundMode}
@@ -129,45 +147,11 @@ export function BrowserShell() {
         />
 
         <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col px-3 py-4 sm:px-4 sm:py-6 md:py-8">
-          {/* Issue #3 only: preview shells without navigation logic. */}
-          <div className="mb-4 flex flex-wrap items-center justify-center gap-1.5 sm:mb-5 sm:gap-2">
-            {(
-              [
-                ["idle", "Home"],
-                ["loading", "Loading"],
-                ["nowhere", "Nowhere"],
-              ] as const
-            ).map(([id, label]) => (
-              <button
-                key={id}
-                type="button"
-                className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition sm:px-3 sm:text-xs ${
-                  preview === id
-                    ? "bg-[var(--accent)] text-white"
-                    : "glass text-[var(--muted)] hover:text-[var(--foreground)]"
-                }`}
-                onClick={() => setPreview(id)}
-              >
-                {label}
-              </button>
-            ))}
-            <button
-              type="button"
-              className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition sm:px-3 sm:text-xs ${
-                showEmptyPanel
-                  ? "bg-[var(--accent)] text-white"
-                  : "glass text-[var(--muted)] hover:text-[var(--foreground)]"
-              }`}
-              onClick={() => {
-                setShowEmptyPanel((v) => !v);
-                setPanelOpen(true);
-              }}
-            >
-              Empty panels
-            </button>
-          </div>
-
-          <PageViewer preview={preview} />
+          <PageViewer
+            entry={currentEntry}
+            html={currentHtml}
+            isLoading={isLoading}
+          />
         </main>
 
         {backgroundMode === "picture" && ready ? (
@@ -180,7 +164,7 @@ export function BrowserShell() {
       <SidePanel
         open={panelOpen}
         onClose={() => setPanelOpen(false)}
-        showEmpty={showEmptyPanel}
+        showEmpty={false}
       />
       <PublishForm open={publishOpen} onClose={() => setPublishOpen(false)} />
     </div>

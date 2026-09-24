@@ -1,2 +1,8 @@
-﻿// PersonService — list people for the picker.
-// Implemented in issue #5 (data layer). Scaffolded by issue #1.
+﻿import { personRepository } from "../repositories/personRepository";
+import type { Person } from "../../types";
+
+export const PersonService = {
+  async list(): Promise<Person[]> {
+    return personRepository.list();
+  },
+};
