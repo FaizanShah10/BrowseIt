@@ -48,6 +48,7 @@ const SITES: SeedSite[] = [
       <ul>
         <li><a href="garden.zz">The Garden</a> — paths and petals</li>
         <li><a href="lighthouse.zz">The Lighthouse</a> — a beam inland</li>
+        <li><a href="ferry.zz">The Ferry</a> — across the bay</li>
         <li><a href="atlas.zz">The Atlas</a> — a map of everywhere</li>
         <li><a href="notebook.zz">The Notebook</a> — a body-only search page</li>
       </ul>
@@ -67,6 +68,7 @@ const SITES: SeedSite[] = [
       <ul>
         <li><a href="tidepool.zz">Back to Tidepool</a></li>
         <li><a href="orchard.zz">The Orchard</a> — fruit and longer days</li>
+        <li><a href="cafe.zz">The Cafe</a> — shade and second cups</li>
         <li><a href="lighthouse.zz">The Lighthouse</a></li>
       </ul>
       <p>A note pinned to the gate mentions <a href="nowhere.yet.zz">nowhere.yet.zz</a>
@@ -83,6 +85,7 @@ const SITES: SeedSite[] = [
       notebook of addresses worth the climb.</p>
       <ul>
         <li><a href="harbor.zz">Harbor</a> — docks and weather talk</li>
+        <li><a href="ferry.zz">The Ferry</a> — the crossing below</li>
         <li><a href="tidepool.zz">Tidepool</a> — where most trails begin</li>
         <li><a href="atlas.zz">Atlas</a> — the index of the Small Web</li>
       </ul>
@@ -98,6 +101,8 @@ const SITES: SeedSite[] = [
       the warehouse wall:</p>
       <ul>
         <li><a href="lighthouse.zz">Up to the Lighthouse</a></li>
+        <li><a href="ferry.zz">Catch the Ferry</a></li>
+        <li><a href="cafe.zz">Warm up at the Cafe</a></li>
         <li><a href="atlas.zz">Consult the Atlas</a></li>
         <li><a href="orchard.zz">Inland to the Orchard</a></li>
       </ul>
@@ -115,6 +120,7 @@ const SITES: SeedSite[] = [
       trees, wooden signs point home:</p>
       <ul>
         <li><a href="garden.zz">Return to the Garden</a></li>
+        <li><a href="workshop.zz">The Workshop</a> — tools and sawdust</li>
         <li><a href="atlas.zz">Find yourself on the Atlas</a></li>
         <li><a href="tidepool.zz">Tidepool at dusk</a></li>
       </ul>
@@ -136,6 +142,9 @@ const SITES: SeedSite[] = [
         <li><a href="harbor.zz">harbor.zz</a> — Harbor</li>
         <li><a href="orchard.zz">orchard.zz</a> — The Orchard</li>
         <li><a href="notebook.zz">notebook.zz</a> — The Notebook</li>
+        <li><a href="ferry.zz">ferry.zz</a> — The Ferry</li>
+        <li><a href="cafe.zz">cafe.zz</a> — The Cafe</li>
+        <li><a href="workshop.zz">workshop.zz</a> — The Workshop</li>
       </ul>
       <p>Start anywhere. Trails four deep are the point.</p>
     `,
@@ -149,7 +158,65 @@ const SITES: SeedSite[] = [
       <p>Loose pages, coffee rings, and one word that lives only here in the
       body — never in a title — so Search can prove it indexes textContent:
       <strong>kerfuffle</strong>.</p>
-      <p>Also a door back: <a href="tidepool.zz">Tidepool</a>.</p>
+      <p>Also doors out: <a href="tidepool.zz">Tidepool</a>,
+      <a href="cafe.zz">The Cafe</a>,
+      <a href="workshop.zz">The Workshop</a>.</p>
+    `,
+  },
+  {
+    address: "ferry.zz",
+    title: "The Ferry",
+    authorId: "person:omar",
+    html: `
+      <h1>The Ferry</h1>
+      <p>A slow crossing of the bay. Timetables fade in the salt air; the
+      destinations do not.</p>
+      <ul>
+        <li><a href="harbor.zz">Harbor</a> — where the hull kisses timber</li>
+        <li><a href="lighthouse.zz">The Lighthouse</a> — a fixed point to steer by</li>
+        <li><a href="tidepool.zz">Tidepool</a> — the quiet side of the water</li>
+        <li><a href="cafe.zz">The Cafe</a> — something warm after the deck spray</li>
+      </ul>
+      <p>Old tickets still name <a href="far.wharf.zz">far.wharf.zz</a>,
+      a landing that never opened.</p>
+    `,
+  },
+  {
+    address: "cafe.zz",
+    title: "The Cafe",
+    authorId: "person:noor",
+    html: `
+      <h1>The Cafe</h1>
+      <p>Two rooms, one kettle, and a chalkboard of addresses worth the walk.
+      The windows fog whenever the ferry docks.</p>
+      <ul>
+        <li><a href="garden.zz">The Garden</a> — sit outside if the sun holds</li>
+        <li><a href="harbor.zz">Harbor</a> — salt on the wind</li>
+        <li><a href="workshop.zz">The Workshop</a> — next door, louder</li>
+        <li><a href="notebook.zz">The Notebook</a> — borrow a pen</li>
+        <li><a href="atlas.zz">The Atlas</a> — if you forgot where you were going</li>
+      </ul>
+      <p>Someone scratched <a href="mist.lane.zz">mist.lane.zz</a> under the
+      menu — no door answers there.</p>
+    `,
+  },
+  {
+    address: "workshop.zz",
+    title: "The Workshop",
+    authorId: "person:samir",
+    html: `
+      <h1>The Workshop</h1>
+      <p>Sawdust, spare hinges, and pages left to dry on a workbench. Samir
+      builds what the Small Web still needs: shelves for other people's sites.</p>
+      <ul>
+        <li><a href="orchard.zz">The Orchard</a> — wood that used to be trees</li>
+        <li><a href="cafe.zz">The Cafe</a> — tea between cuts</li>
+        <li><a href="notebook.zz">The Notebook</a> — measurements and margins</li>
+        <li><a href="atlas.zz">The Atlas</a> — find a spare address</li>
+        <li><a href="ferry.zz">The Ferry</a> — deliver something across the bay</li>
+      </ul>
+      <p>A half-finished label reads <a href="empty.shelf.zz">empty.shelf.zz</a>
+      — reserved, never claimed.</p>
     `,
   },
 ];
@@ -319,9 +386,30 @@ const AYESHA_TRAIL: SeedVisitStep[] = [
     fromId: null,
     createdAt: "2026-01-16T15:00:00.000Z",
   },
+  {
+    id: "visit:seed:ayesha:23",
+    address: "ferry.zz",
+    method: "link",
+    fromId: "visit:seed:ayesha:6",
+    createdAt: "2026-01-17T09:00:00.000Z",
+  },
+  {
+    id: "visit:seed:ayesha:24",
+    address: "cafe.zz",
+    method: "link",
+    fromId: "visit:seed:ayesha:23",
+    createdAt: "2026-01-17T09:10:00.000Z",
+  },
+  {
+    id: "visit:seed:ayesha:25",
+    address: "workshop.zz",
+    method: "history",
+    fromId: null,
+    createdAt: "2026-01-17T14:00:00.000Z",
+  },
 ];
 
-/** Omar: lighthouse → harbor → atlas trail. */
+/** Omar: lighthouse → harbor → ferry → atlas trail. */
 const OMAR_TRAIL: SeedVisitStep[] = [
   {
     id: "visit:seed:omar:1",
@@ -339,17 +427,31 @@ const OMAR_TRAIL: SeedVisitStep[] = [
   },
   {
     id: "visit:seed:omar:3",
-    address: "atlas.zz",
+    address: "ferry.zz",
     method: "link",
     fromId: "visit:seed:omar:2",
-    createdAt: "2026-01-12T10:05:00.000Z",
+    createdAt: "2026-01-12T10:04:00.000Z",
   },
   {
     id: "visit:seed:omar:4",
+    address: "atlas.zz",
+    method: "link",
+    fromId: "visit:seed:omar:3",
+    createdAt: "2026-01-12T10:07:00.000Z",
+  },
+  {
+    id: "visit:seed:omar:5",
     address: "tidepool.zz",
     method: "search",
     fromId: null,
     createdAt: "2026-01-14T18:00:00.000Z",
+  },
+  {
+    id: "visit:seed:omar:6",
+    address: "far.wharf.zz",
+    method: "link",
+    fromId: null,
+    createdAt: "2026-01-14T18:10:00.000Z",
   },
 ];
 
@@ -371,6 +473,13 @@ const MIRA_TRAIL: SeedVisitStep[] = [
   },
   {
     id: "visit:seed:mira:3",
+    address: "cafe.zz",
+    method: "link",
+    fromId: "visit:seed:mira:2",
+    createdAt: "2026-01-13T11:08:00.000Z",
+  },
+  {
+    id: "visit:seed:mira:4",
     address: "nowhere.yet.zz",
     method: "typed",
     fromId: null,
@@ -378,7 +487,7 @@ const MIRA_TRAIL: SeedVisitStep[] = [
   },
 ];
 
-/** Noor: notebook author, short trail. */
+/** Noor: notebook + cafe author trail. */
 const NOOR_TRAIL: SeedVisitStep[] = [
   {
     id: "visit:seed:noor:1",
@@ -389,28 +498,56 @@ const NOOR_TRAIL: SeedVisitStep[] = [
   },
   {
     id: "visit:seed:noor:2",
-    address: "tidepool.zz",
+    address: "cafe.zz",
     method: "link",
     fromId: "visit:seed:noor:1",
     createdAt: "2026-01-11T15:05:00.000Z",
   },
+  {
+    id: "visit:seed:noor:3",
+    address: "tidepool.zz",
+    method: "link",
+    fromId: "visit:seed:noor:2",
+    createdAt: "2026-01-11T15:12:00.000Z",
+  },
+  {
+    id: "visit:seed:noor:4",
+    address: "mist.lane.zz",
+    method: "typed",
+    fromId: null,
+    createdAt: "2026-01-11T16:00:00.000Z",
+  },
 ];
 
-/** Samir: light browsing. */
+/** Samir: workshop author, light browsing. */
 const SAMIR_TRAIL: SeedVisitStep[] = [
   {
     id: "visit:seed:samir:1",
-    address: "atlas.zz",
+    address: "workshop.zz",
     method: "typed",
     fromId: null,
     createdAt: "2026-01-14T13:00:00.000Z",
   },
   {
     id: "visit:seed:samir:2",
-    address: "harbor.zz",
+    address: "orchard.zz",
     method: "link",
     fromId: "visit:seed:samir:1",
+    createdAt: "2026-01-14T13:05:00.000Z",
+  },
+  {
+    id: "visit:seed:samir:3",
+    address: "cafe.zz",
+    method: "link",
+    fromId: "visit:seed:samir:2",
     createdAt: "2026-01-14T13:10:00.000Z",
+  },
+  {
+    id: "visit:seed:samir:4",
+    address: "empty.shelf.zz",
+    method: "link",
+    fromId: "visit:seed:samir:1",
+    createdAt: "2026-01-14T13:20:00.000Z",
   },
 ];
 
